@@ -15,7 +15,7 @@ def receiveMessage():
 def sendMessage(event=None):
     message = my_message.get()
     my_message.set("")
-    c_socket.sendMessage(bytes(message, "utf8"))
+    c_socket.send(bytes(message, "utf8"))
     if message == "{quit}":
         c_socket.close()
         top.quit()
