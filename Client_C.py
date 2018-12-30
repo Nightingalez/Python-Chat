@@ -4,8 +4,8 @@
 import _tkinter # default Python GUI building tool
 from socket import socket # TCP (Transmission Control Protocol)
 # sockets for networking
-from socket import AF_INET # first networking flag
-from socket import SOCK_STREAM # second networking flag
+from socket import AF_INET # importing the first networking flag
+from socket import SOCK_STREAM # importing the second networking flag
 from threading import Thread # importing threads
 import send as send # importing the send package
 
@@ -35,7 +35,7 @@ def send_message(event=None, my_mesage=None): # one of the arguments here is eve
         top.quit() # quitting the GUI application
 
 def exit(event=None):
-    my_message.set("{quit}") # setting the input field to the quite message
+    my_message.set("{quit}") # setting the input field to the quit message
     send_message() # calling the send function in order to send messages to the server
     
 top = _tkinter.TK_VERSION() # variable used in the exit method
@@ -43,7 +43,7 @@ top.title("User") # variable used in the exit method
 
 messages_count = _tkinter.Frame(top) # frame containing all the lists with messages
 my_message = _tkinter.StringVar() # string variable for the current message to be sent
-my_message.set("Start chatting here.") # setting up that string variable to a default
+my_message.set("Start chatting here.") # setting up the string variable from above to a default
 # on screen  expression
 scroll = _tkinter.Scrollbar(messages_count) # enabling the user to scroll down
 # to previously-texted messages in the chat
@@ -58,7 +58,7 @@ input_field.bind("<Return>", send)
 input_field.pack()
 send_button = _tkinter.button(top, text="Send message", command=send)
 send_button.pack()
-top.protocol("Close window", exit()) # call to on_close
+top.protocol("Close window", exit()) # call to exit method
 # when the user wants to quit the app
 
 # The following lines of code will connect
