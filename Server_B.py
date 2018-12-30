@@ -21,28 +21,27 @@ def userConnection():
     while True:
         client, client_address = server.accept()
         print("%s:%s has connected." % client_address)
-        client.send(bytes("Greetings from the cave!" +
-                          "Now type your name and press enter!", "utf8"))
+        client.send(bytes("Type your name and press enter!", "utf8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
 
 def handle_client(client): # Takes client socket as parameter
     name = client.recv(buffersize).decode("utf8")
-    welcome = 'Welcome %s! To quit, type {quit} to exit.' % name
+    welcome = 'Welcome %s! To quit, type /quit to exit.' % name
     client.send(bytes(welcome, "utf8"))
-    message = "%s has joined the chat!" % name
+    message = "%s has joined the chatroom!" % name
     broadcast(bytes(message, "utf8"))
     clients[client] = name
 
     while True:
         message = client.recv(buffersize)
-        if message != bytes("{quit}", "utf8"):
+        if message != bytes("/quit", "utf8"):
             broadcast(message, name+": ")
         else:
-            client.send(bytes("{quit}", "utf8"))
+            client.send(bytes("/quit}", "utf8"))
             client.close()
             del clients[client]
-            broadcast(bytes("%s has left the chat!" % name, "utf8"))
+            broadcast(bytes("%s has left the chatroom!" % name, "utf8"))
             break
 
 def broadcast(message, prefix=""): # prefix is for name identification
