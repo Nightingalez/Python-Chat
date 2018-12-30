@@ -1,6 +1,6 @@
 # Importing libraries
-from socket import AF_INET as AI, socket as sc, SOCK_STREAM as SS
-from threading import Thread as th
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
 
 clients = {}
 addresses = {}
@@ -9,7 +9,7 @@ serverHost = ''
 serverPort = 33000
 bufferSize = 1024
 addr = (serverHost, serverPort)
-server = sc(AI, SS)
+server = socket(AF_INET, SOCK_STREAM)
 server.bind(addr)
 
 # Receives connection and asks the client to input their username
@@ -21,7 +21,7 @@ def incomingConnections():
         client.send(bytes("Please enter your username", "utf8"))
 
         addresses[client] = client_addresses
-        th(target=handleClient, args=(client,)).start()
+        Thread(target=handleClient, args=(client,)).start()
 
 # Takes in the client's socket as an argument
 def handleClient(client):
@@ -54,7 +54,7 @@ if __name__== "__main__":
     server.listen(6)
     print("Server is running")
     print("Waiting for a client to connect")
-    ACCEPT_THREAD = th(target=incomingConnections())
+    ACCEPT_THREAD = Thread(target=incomingConnections())
     ACCEPT_THREAD.start()
     ACCEPT_THREAD.join()
     server.close()
