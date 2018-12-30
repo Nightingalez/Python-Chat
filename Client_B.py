@@ -16,13 +16,13 @@ def sendMessage(event=None):
     message = my_message.get()
     my_message.set("")
     c_socket.send(bytes(message, "utf8"))
-    if message == "{quit}":
+    if message == "/quit":
         c_socket.close()
         top.quit()
 
 
 def onExit(event=None):
-    my_message.set("{quit}")
+    my_message.set("/quit")
     sendMessage()
 
 
@@ -31,7 +31,7 @@ top.title("Chatter")
 
 messages_frame = tkinter.Frame(top)
 my_message = tkinter.StringVar()
-my_message.set("Type your message here: ")
+my_message.set("Enter message: ")
 scrollbar = tkinter.Scrollbar(messages_frame)
 
 message_list = tkinter.Listbox(messages_frame, height=15, width=50, yscrollcommand=scrollbar.set)
