@@ -17,15 +17,15 @@ def msgRecieve():
 def msgSend(event = None):
     msg = myMsg.get()
     myMsg.set("") #The place where the user writes the messege
-    clientSocket.send(bytes(msg, "utf8"))
-    #This if- statement checks if {Quit} is written; if it is, it stops the client
-    if msg == "{Quit}":
+    clientSocket.send(bytes(msg, "utf8")) #The client socket seneds the message to the server
+    #This if- statement checks if /quit is written; if it is, it stops the client from sending messeges
+    if msg == "/quit":
         clientSocket.close()
         top.quit()
 
 '''This function closes the socket before the GUI gets closed'''
 def scktClose(event = None):
-    myMsg.set("{Quit}") #The input field is set to {Quit}
+    myMsg.set("/quit") #The input field is set to {Quit}
     msgSend() #The msgSend funciton, defined above, gets called and executed
 
 '''GUI build'''
@@ -35,7 +35,7 @@ top.title("Simple Chat") #Sets the title for the chat window
 
 msgFrame = tkinter.Frame(top) #Groups all other widgets into a complex layout
 myMsg = tkinter.StringVar() #A string which holds the username and the messages that are sent
-myMsg.set("Enter username/message") #Setting the username
+myMsg.set("Enter message here") #Setting the username
 sb = tkinter.Scrollbar(msgFrame) #Creates a scrollbar for the frame, so the user can navigate through previous messages
 
 msgList = tkinter.Listbox(msgFrame, height = 30, width = 60, yscrollcommand = sb.set) #Defines a message list, which will hold the messeges
@@ -63,10 +63,10 @@ else:
     serverPort = int(serverPort)
 
 bufferSize = 1024
-addr = (serverHost, serverPort)
+addr = (serverHost, serverPort) #Server address
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect(addr)
 
-recieveThread = Thread(target = msgRecieve)
-recieveThread.start()
+recieveThread = Thread(target = msgRecieve) #A thread object for receiving messeges
+recieveThread.start() #This method changes the thread state to runnable; a run method is called on the thread object, when it gets started
 tkinter.mainloop() #Executes the GUI
