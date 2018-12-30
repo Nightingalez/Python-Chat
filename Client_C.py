@@ -7,9 +7,9 @@ from socket import socket # TCP (Transmission Control Protocol)
 from socket import AF_INET # first networking flag
 from socket import SOCK_STREAM # second networking flag
 from threading import Thread # importing threads
+import send as send # importing the send package
 
 # defining the top-level widget
-
 
 def receive_message(messsage_list=None):
     while True:
@@ -21,7 +21,6 @@ def receive_message(messsage_list=None):
         except OSError: # handling a Python built-in exception
             #  meant for when the user decides to leave the chat
          break # break statement for ending this while-based infinite loop
-
 
 def send_message(event=None, my_mesage=None): # one of the arguments here is event because
     # it is passed by binders
@@ -35,13 +34,9 @@ def send_message(event=None, my_mesage=None): # one of the arguments here is eve
         client_socket.close() # exit message which will close the socket
         top.quit() # quitting the GUI application
 
-
-def send():
-    pass
-
 def exit(event=None):
     my_message.set("{quit}") # setting the input field to the quite message
-    send() # calling the sen function in order to send messages to the server
+    send_message() # calling the send function in order to send messages to the server
     
 top = _tkinter.TK_VERSION() # variable used in the exit method
 top.title("User") # variable used in the exit method
@@ -63,7 +58,7 @@ input_field.bind("<Return>", send)
 input_field.pack()
 send_button = _tkinter.button(top, text="Send message", command=send)
 send_button.pack()
-top.protocol("Close window", on_close) # call to on_close
+top.protocol("Close window", exit()) # call to on_close
 # when the user wants to quit the app
 
 # The following lines of code will connect
@@ -81,10 +76,6 @@ address = (Host, Port)
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect(address)
 
-
-def receive(args):
-    pass
-
-receive_thread = Thread(target=receive)
+receive_thread = Thread(target=receive_message())
 receive_thread.start()
 _tkinter.mainloop() # Starts up the GUI
