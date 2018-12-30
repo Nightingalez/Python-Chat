@@ -16,11 +16,11 @@ server.bind(addr)
 def incomingConnections():
 
     while True:
-        client, client_addresses = server.accept()
-        print("Server: %s has connected." % client_addresses)
+        client, client_address = server.accept()
+        print("%s:%s has connected." % client_address)
         client.send(bytes("Please enter your username", "utf8"))
 
-        addresses[client] = client_addresses
+        addresses[client] = client_address
         Thread(target=handleClient, args=(client,)).start()
 
 # Takes in the client's socket as an argument
@@ -35,10 +35,10 @@ def handleClient(client):
 
     while True:
         msg = client.recv(bufferSize)
-        if msg != bytes("{quit}", "utf8"):
+        if msg != bytes("/quit", "utf8"):
             broadcast(msg, name+": ")
         else:
-            client.send(bytes("{quit}", "utf8"))
+            client.send(bytes("/quit", "utf8"))
             client.close()
             del clients[client]
             broadcast(bytes("%s disconnected" % name, "utf8"))
@@ -50,14 +50,13 @@ def broadcast(msg, prefix=""):
         sock.send(bytes(prefix, "utf8")+msg)
 
 
-if __name__== "__main__":
-    server.listen(6)
-    print("Server is running")
-    print("Waiting for a client to connect")
-    ACCEPT_THREAD = Thread(target=incomingConnections())
-    ACCEPT_THREAD.start()
-    ACCEPT_THREAD.join()
-    server.close()
+server.listen(5)
+print("Server is running")
+print("Waiting for a client to connect")
+ACCEPT_THREAD = Thread(target=incomingConnections())
+ACCEPT_THREAD.start()
+ACCEPT_THREAD.join()
+server.close()
 
 
 
