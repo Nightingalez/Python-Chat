@@ -32,7 +32,7 @@ def handleClient(client):
     broadcast(bytes(msg, "utf8"))
     clients[client] = name
 
-
+# Disconnects the users
     while True:
         msg = client.recv(bufferSize)
         if msg != bytes("/quit", "utf8"):
