@@ -1,88 +1,83 @@
-"TCP network socket, using AF_INET and SOCK_STREAM flags"
-from socket import AF_INET, socket, SOCK_STREAM
+# Importing the default Python GUI (Graphical User Interface) tool,
+# the sockets as well as the two networking flags: AF_NET and SOCK_STREAM
 
-"Threadin libray, to utilize several CPU's at the same time"
-from threading import Thread
+import _tkinter # default Python GUI building tool
+from socket import socket # TCP (Transmission Control Protocol)
+# sockets for networking
+from socket import AF_INET # importing the first networking flag
+from socket import SOCK_STREAM # importing the second networking flag
+from threading import Thread # importing threads
 
+# defining the two main methods: receive and send for messages
 
-def accept_incoming_connections():
-    "Registers incoming clients and adds the them to a client address list (client_address)"
+def receive_message(messsage_list=None):
     while True:
-        "Accepts a connection and returns a variable of type (conn, address)"
-        "'conn' is a socket object that send an receive data"
-        "'address' is the address where from the socket (conn) are bound to"
-        client, address_from_client = SERVER.accept()
+        try:
+            message = client_socket.recv(buffer_size).decode("utf8") # utf8 is a
+            # unicode variable made for encoding words
+            # by allocating one to four 8 bit bytes
+            messsage_list.insert(_tkinter.END, message)
+        except OSError: # handling a Python built-in exception
+            #  meant for when the user decides to leave the chat
+         break # break statement for ending this while-based infinite loop
 
-        "'%s:%s is used to have a string placeholder for both the conn and address"
-        print("%s:%s has connected." % address_from_client)
+def send_message(event=None, my_mesage=None): # one of the arguments here is event because
+    # it is passed by binders
+    #  (i.e. tools that combine files together)
+    message = my_mesage.get() # getter method for the user to receive the message
+    my_message.set(" ") # setter method for a clear input field in the chat
+    client_socket.send(bytes(message, "utf8")) # command meant to send messages
+    # to the server
 
-        ".send sends the bytes value into the client variable"
-        "bytes() is a method that returns an immutable integer ranging from 0-256"
-        "the two parameters used in bytes() is the source (client) and -"
-        "the encoding (utf8) since the source is a string"
-        client.send(bytes("Greetings. Pls type your name and hit enter.", "utf8"))
+    if message == "{quit}":
+        client_socket.close() # exit message which will close the socket
+        top.quit() # quitting the GUI application
 
-        "Adds the input from the user to the address client list"
-        addresses[client] = address_from_client
+def exit(event=None):
+    my_message.set("{quit}") # setting the input field to the quit message
+    send_message() # calling the send_message function in order to send messages to the server
 
-        "Separates the tasks to the CPU's using threading.Thread() method"
-        "target= is the target which needs to be threaded"
-        "args= takes the potential clients which needs to be threaded if there is several of them"
-        Thread(target=client_handler, args=(client,)).start()
+# defining the top-level widget
 
+top = _tkinter.TK_VERSION() # variable used in the exit method
+top.title("User") # variable used in the exit method
 
-def client_handler(client):
-    "Takes one client connection"
+messages_count = _tkinter.Frame(top) # frame containing all the lists with messages
+my_message = _tkinter.StringVar() # string variable for the current message to be sent
+my_message.set("Start chatting here.") # setting up the string variable from above to a default
+# on screen  expression
+scroll = _tkinter.Scrollbar(messages_count) # enabling the user to scroll down
+# to previously-texted messages in the chat
 
-    "recv(BUFSIZ) recvieves data from the socket and returns it as a sring"
-    "the maximum amount of data possible is defined by the BUFSIZ, which in this case is 1024"
-    name = client.recv(BUFSIZ).decode("utf8")
-    welcome = 'Welcome %s. Type {quit} to exit the program.' % name
-    client.send(bytes(welcome, "utf8"))
-    server_status = "%s is online" % name
-    broadcast(bytes(server_status, "utf8"))
+message_list = _tkinter.Listbox(messages_count, height=20, width=50, yscrollcommand=scroll.set)
+scroll.pack(side=_tkinter.RIGHT, fill=_tkinter.Y)
+message_list.pack(side=_tkinter.LEFT, fill=_tkinter.BOTH)
+message_list.pack()
+messages_count.pack()
 
-    "Adds the user to a client list"
-    clients[client] = name
+input_field = _tkinter.Entry(top, textvariable=my_message)
+input_field.bind("<Return>", send_message)
+input_field.pack()
+send_button = _tkinter.button(top, text="Send message", command=send_message)
+send_button.pack()
+top.protocol("Close window", exit) # call to exit method
+# when the user wants to quit the app
 
-    while True:
-        server_status = client.recv(BUFSIZ)
-        if server_status != bytes("{quit}", "utf8"):
-            broadcast(server_status, name + ": ")
-        else:
-            client.send(bytes("{quit}", "utf8"))
-            client.close()
+# The following lines of code will connect
+# the client to the server
 
-            "delets the client from the client list, when done"
-            del clients[client]
-            broadcast(bytes("%s left the chat room." % name, "utf8"))
-            break
+Host = input('Enter host name: ')
+Port = input('Enter port code: ')
+if not Port:
+    Port = 33000
+else:
+    Port = int(Port)
 
+buffer_size = 1024
+address = (Host, Port)
+client_socket = socket(AF_INET, SOCK_STREAM)
+client_socket.connect(address)
 
-def broadcast(server_status, prefix=""):  # prefix is for name identification.
-    "Sends message to all clients"
-
-    for sock in clients:
-        sock.send(bytes(prefix, "utf8") + server_status)
-
-
-clients = {}
-addresses = {}
-
-HOST = ''
-"1024 through 49151: Registered Ports"
-PORT = 33000
-BUFSIZ = 1024
-ADDR = (HOST, PORT)
-
-SERVER = socket(AF_INET, SOCK_STREAM)
-SERVER.bind(ADDR)
-
-if __name__ == "__main__":
-    "sets the possible amount of unaccpted connection, which is 5 in this case"
-    SERVER.listen(5)
-    print("Waiting for connection...")
-    ACCEPT_THREAD = Thread(target=accept_incoming_connections)
-    ACCEPT_THREAD.start()
-    ACCEPT_THREAD.join()
-    SERVER.close()
+receive_thread = Thread(target=receive_message)
+receive_thread.start()
+_tkinter.mainloop() # Starts up the GUI
