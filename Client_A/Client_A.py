@@ -1,3 +1,5 @@
+#Client by Antonio Tonchev 20174717
+
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
