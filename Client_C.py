@@ -9,10 +9,7 @@ from socket import SOCK_STREAM # second networking flag
 
 # defining the top-level widget
 
-top = _tkinter.TK_VERSION() # variable used in the exit method
-top.title("User") # variable used in the exit method
-
-def receive_message():
+def receive_message(messsage_list=None):
     while True:
         try:
             message = client_socket.recv(buffer_size).decode("utf8") # utf8 is a
@@ -24,7 +21,7 @@ def receive_message():
          break # break statement for ending this while-based infinite loop
 
 
-def send_message(event=None): # the argument here is event because it is passed by binders
+def send_message(event=None, my_mesage=None): # the argument here is event because it is passed by binders
     #  (i.e. tools that combine files together)
     message = my_mesage.get() # getter method for the user to receive the message
     my_message.set(" ") # setter method for a clear input field in the chat
@@ -35,9 +32,16 @@ def send_message(event=None): # the argument here is event because it is passed 
         client_socket.close() # exit message which will close the socket
         top.quit() # quitting the GUI application
 
+
+def send():
+    pass
+
 def exit(event=None):
     my_message.set("{quit}") # setting the input field to the quite message
     send() # calling the sen function in order to send messages to the server
+    
+top = _tkinter.TK_VERSION() # variable used in the exit method
+top.title("User") # variable used in the exit method
 
 messages_count = _tkinter.Frame(top) # frame containing all the lists with messages
 my_message = _tkinter.StringVar() # string variable for the current message to be sent
