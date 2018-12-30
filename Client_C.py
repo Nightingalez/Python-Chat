@@ -7,9 +7,8 @@ from socket import socket # TCP (Transmission Control Protocol)
 from socket import AF_INET # importing the first networking flag
 from socket import SOCK_STREAM # importing the second networking flag
 from threading import Thread # importing threads
-import send as send # importing the send package
 
-# defining the top-level widget
+# defining the two main methods: receive and send for messages
 
 def receive_message(messsage_list=None):
     while True:
@@ -36,8 +35,10 @@ def send_message(event=None, my_mesage=None): # one of the arguments here is eve
 
 def exit(event=None):
     my_message.set("{quit}") # setting the input field to the quit message
-    send_message() # calling the send function in order to send messages to the server
-    
+    send_message() # calling the send_message function in order to send messages to the server
+
+# defining the top-level widget
+
 top = _tkinter.TK_VERSION() # variable used in the exit method
 top.title("User") # variable used in the exit method
 
@@ -53,12 +54,13 @@ scroll.pack(side=_tkinter.RIGHT, fill=_tkinter.Y)
 message_list.pack(side=_tkinter.LEFT, fill=_tkinter.BOTH)
 message_list.pack()
 messages_count.pack()
+
 input_field = _tkinter.Entry(top, textvariable=my_message)
-input_field.bind("<Return>", send)
+input_field.bind("<Return>", send_message)
 input_field.pack()
-send_button = _tkinter.button(top, text="Send message", command=send)
+send_button = _tkinter.button(top, text="Send message", command=send_message)
 send_button.pack()
-top.protocol("Close window", exit()) # call to exit method
+top.protocol("Close window", exit) # call to exit method
 # when the user wants to quit the app
 
 # The following lines of code will connect
@@ -76,6 +78,6 @@ address = (Host, Port)
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect(address)
 
-receive_thread = Thread(target=receive_message())
+receive_thread = Thread(target=receive_message)
 receive_thread.start()
 _tkinter.mainloop() # Starts up the GUI
